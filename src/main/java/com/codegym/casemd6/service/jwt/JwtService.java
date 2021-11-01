@@ -18,12 +18,12 @@ public class JwtService {
     public static final String SECRET_KEY = "11111111111111111111111111111111";
     public static final int EXPIRE_TIME = 86400000;
 
-    public String generateTokenLogin(String email) {
+    public String generateTokenLogin(String username) {
         String token = null;
         try {
             JWSSigner signer = new MACSigner(generateShareSecret());
             JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
-            builder.claim(EMAIL, email);
+            builder.claim(EMAIL, username);
             builder.expirationTime(generateExpirationDate());
             JWTClaimsSet claimsSet = builder.build();
             SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);
@@ -63,15 +63,15 @@ public class JwtService {
         return expiration;
     }
 
-    public String getEmailFromToken(String token) {
-        String email = null;
+    public String getUserNameFromToken(String token) {
+        String username = null;
         try {
             JWTClaimsSet claims = getClaimsFromToken(token);
-            email = claims.getStringClaim(EMAIL);
+            username = claims.getStringClaim(EMAIL);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return email;
+        return username;
     }
 
     private byte[] generateShareSecret() {
@@ -89,8 +89,8 @@ public class JwtService {
         if (token == null || token.trim().length() == 0) {
             return false;
         }
-        String email = getEmailFromToken(token);
-        if (email == null || email.isEmpty()) {
+        String username = getUserNameFromToken(token);
+        if (username == null || username.isEmpty()) {
             return false;
         }
         if (isTokenExpired(token)) {

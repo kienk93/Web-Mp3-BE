@@ -40,14 +40,14 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String authToken = httpRequest.getHeader(TOKEN_HEADER);
         if (jwtService.validateTokenLogin(authToken)) {
-            String email = jwtService.getEmailFromToken(authToken);
-            com.codegym.casemd6.model.Account account = serviceAccount.loadUserByEmail(email);
-            if (email != null) {
+            String username = jwtService.getUserNameFromToken(authToken);
+            com.codegym.casemd6.model.Account account = serviceAccount.loadUserByUserName(username);
+            if (username != null) {
                 boolean enabled = true;
                 boolean accountNonExpired = true;
                 boolean credentialsNonExpired = true;
                 boolean accountNonLocked = true;
-                UserDetails userDetail = new User(email, account.getPassword(), enabled, accountNonExpired,
+                UserDetails userDetail = new User(username, account.getPassword(), enabled, accountNonExpired,
                         credentialsNonExpired, accountNonLocked, account.getAuthorities());
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetail,
                         null, userDetail.getAuthorities());

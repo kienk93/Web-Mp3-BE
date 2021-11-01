@@ -38,15 +38,15 @@ public class ServiceAccount implements IServiceAccount {
     }
 
     @Override
-    public Account loadUserByEmail(String email) {
-        return accountRepo.findByEmail(email);
+    public Account loadUserByUserName(String username) {
+        return accountRepo.findByUsername(username);
     }
 
     @Override
     public boolean checkLogin(Account account) {
         List<Account> listUser = accountRepo.findAll();
         for (Account userExist : listUser) {
-            if (StringUtils.equals(account.getEmail(), userExist.getEmail())
+            if (StringUtils.equals(account.getUsername(), userExist.getUsername())
                     && StringUtils.equals(account.getPassword(), userExist.getPassword())) {
                 return true;
             }
@@ -59,7 +59,7 @@ public class ServiceAccount implements IServiceAccount {
         List<Account> listUser = accountRepo.findAll();
         for (Account userExist : listUser) {
             if (account.getId() == userExist.getId() ||
-                    StringUtils.equals(account.getEmail(), userExist.getEmail()) ||
+                    StringUtils.equals(account.getUsername(), userExist.getUsername()) ||
                     !StringUtils.equals(account.getPassword(), account.getRe_password())) {
                 return false;
             }
