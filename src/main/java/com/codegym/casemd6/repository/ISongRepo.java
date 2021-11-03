@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ISongRepo extends JpaRepository<Song,Long> {
+    Iterable<Song> findAllByAccount_Id(Long id);
 }

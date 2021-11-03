@@ -29,4 +29,8 @@ public class ServiceSong implements ISongService{
     public void remove(Long id) {
         songRepo.deleteById(id);
     }
+
+    public Iterable<Song> findByAcount(Long id){
+        return songRepo.findAllByAccount_Id(id);
+    }
 }
