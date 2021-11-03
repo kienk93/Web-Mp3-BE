@@ -39,7 +39,8 @@ public class ServiceAccount implements IServiceAccount {
 
     @Override
     public Account loadUserByUserName(String username) {
-        return accountRepo.findByUsername(username);
+        Account account = accountRepo.findByUsername(username);
+        return account;
     }
 
     @Override

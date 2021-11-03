@@ -14,7 +14,7 @@ import java.util.Date;
 
 @Service
 public class JwtService {
-    public static final String EMAIL = "email";
+    public static final String USERNAME = "username";
     public static final String SECRET_KEY = "11111111111111111111111111111111";
     public static final int EXPIRE_TIME = 86400000;
 
@@ -23,7 +23,7 @@ public class JwtService {
         try {
             JWSSigner signer = new MACSigner(generateShareSecret());
             JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
-            builder.claim(EMAIL, username);
+            builder.claim(USERNAME, username);
             builder.expirationTime(generateExpirationDate());
             JWTClaimsSet claimsSet = builder.build();
             SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);
@@ -67,7 +67,7 @@ public class JwtService {
         String username = null;
         try {
             JWTClaimsSet claims = getClaimsFromToken(token);
-            username = claims.getStringClaim(EMAIL);
+            username = claims.getStringClaim(USERNAME);
         } catch (Exception e) {
             e.printStackTrace();
         }

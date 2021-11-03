@@ -2,6 +2,7 @@ package com.codegym.casemd6.controller;
 
 
 import com.codegym.casemd6.dto.LoginAccount;
+import com.codegym.casemd6.dto.MesageRespons;
 import com.codegym.casemd6.model.Account;
 import com.codegym.casemd6.model.AppRole;
 import com.codegym.casemd6.model.Image;
@@ -10,6 +11,7 @@ import com.codegym.casemd6.service.approle.IServiceAppRole;
 import com.codegym.casemd6.service.image.IServiceImage;
 import com.codegym.casemd6.service.jwt.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -27,6 +29,7 @@ import java.util.Map;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/account")
+@EnableSpringDataWebSupport
 public class SignUpController {
     @Autowired
     IServiceAccount serviceAccount;
@@ -39,15 +42,18 @@ public class SignUpController {
 
 
     @PostMapping("/signup")
-    public ResponseEntity<String> createAcc(@Valid @RequestBody Account account) {
+    public ResponseEntity<MesageRespons> createAcc(@Valid @RequestBody Account account) {
         AppRole role = serviceAppRole.findById(2L).get();
         Image image = serviceImage.findById(1L).get();
         account.setAvatar(image);
         account.setRole(role);
+        MesageRespons mesage = new MesageRespons();
         if (serviceAccount.add(account)) {
-            return new ResponseEntity<>("Ok", HttpStatus.CREATED);
-        } else
-            return new ResponseEntity<>("Exited", HttpStatus.BAD_REQUEST);
+            mesage.setMesage("ok");
+        } else {
+            mesage.setMesage("exited or password and re_password is not match!");
+        }
+        return new ResponseEntity<>(mesage, HttpStatus.OK);
 
     }
 
@@ -65,25 +71,25 @@ public class SignUpController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(HttpServletRequest request, @RequestBody Account account) {
-        String result = "";
+        MesageRespons result = new MesageRespons();
         HttpStatus httpStatus = null;
         try {
             if (serviceAccount.checkLogin(account)) {
-                result = jwtService.generateTokenLogin(account.getUsername());
+                String tokenLogin = jwtService.generateTokenLogin(account.getUsername());
                 Account account1 = serviceAccount.loadUserByUserName(account.getUsername());
                 LoginAccount loginAccount = new LoginAccount();
                 loginAccount.setId(account1.getId());
                 loginAccount.setFullName(account1.getFullName());
                 loginAccount.setAvatar(account1.getAvatar());
-                loginAccount.setToken(result);
+                loginAccount.setToken(tokenLogin);
                 return new ResponseEntity(loginAccount, HttpStatus.OK);
             } else {
-                result = "Wrong email or password or not verification";
-                httpStatus = HttpStatus.BAD_REQUEST;
+                result.setMesage("Wrong email or password!");
+                httpStatus = HttpStatus.OK;
             }
         } catch (Exception ex) {
-            result = "Server Error";
-            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+            result.setMesage("Server Error");
+            httpStatus = HttpStatus.OK;
         }
         return new ResponseEntity<>(result, httpStatus);
     }

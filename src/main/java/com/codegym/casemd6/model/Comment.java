@@ -15,6 +15,8 @@ public class Comment {
     private String text;
 
     @ManyToOne
+    @JoinColumn(name = "account_id")
+    @JsonBackReference
     private Account account;
 
     @ManyToOne

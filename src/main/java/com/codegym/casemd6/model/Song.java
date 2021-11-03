@@ -19,6 +19,8 @@ public class Song {
     private String path;
     private String singer;
     private Long count;
+    @ManyToOne
+    private Account account;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "song", orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.FALSE)
