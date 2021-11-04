@@ -12,9 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -43,5 +40,11 @@ public class ClientController {
         Pageable pageable = PageRequest.of(0, 10, Sort.by("countLike").descending());
         Page<Song> songPage = songService.findAllLestes(pageable);
         return new ResponseEntity<>(songPage, HttpStatus.OK);
+    }
+
+    @PutMapping("/upadateSong")
+    public ResponseEntity<String> updateSong(@RequestBody Song song) {
+        songService.save(song);
+        return new ResponseEntity<>("Ok", HttpStatus.OK);
     }
 }
