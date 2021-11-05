@@ -32,9 +32,10 @@ public class MusicController {
         Song newSong = new Song();
         newSong.setName(song.getName());
         newSong.setPath(song.getPath());
-        newSong.setCount(song.getCount());
         newSong.setSinger(song.getSinger());
         newSong.setAccount(account);
+        newSong.setCount(0L);
+        newSong.setCountLike(0L);
         songService.save(newSong);
         MesageRespons mesageRespons = new MesageRespons();
         mesageRespons.setMesage("ok");

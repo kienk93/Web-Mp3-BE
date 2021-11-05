@@ -44,6 +44,7 @@ public class ClientController {
 
     @PutMapping("/upadateSong")
     public ResponseEntity<String> updateSong(@RequestBody Song song) {
+        song.setCount(song.getCount()+1);
         songService.save(song);
         return new ResponseEntity<>("Ok", HttpStatus.OK);
     }

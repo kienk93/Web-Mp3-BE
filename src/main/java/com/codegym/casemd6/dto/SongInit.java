@@ -7,6 +7,5 @@ public class SongInit {
     private String name;
     private String path;
     private String singer;
-    private Long count;
     private Long idAccount;
 }
