@@ -1,6 +1,5 @@
 package com.codegym.casemd6.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
@@ -11,21 +10,22 @@ import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Data
 @Entity
-//@Table(name = "song")
-//@JsonIgnoreProperties(value = {"commentList", "likeList", "playlists"}, allowGetters = true, ignoreUnknown = true)
-public class Song implements Comparable<Song> {
+@Table(name = "playlist")
+//@JsonIgnoreProperties(value = {"commentList", "likeList", "songs"}, allowGetters = true, ignoreUnknown = true)
+public class Playlist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private String path;
-    private String singer;
-    private Long count;
-    private Long countLike;
+    private Date date;
+    private String image;
+
     @ManyToOne
     private Account account;
 
@@ -39,13 +39,14 @@ public class Song implements Comparable<Song> {
     @JsonManagedReference
     private List<Comment> commentList;
 
-    @Override
-    public int compareTo(Song o) {
-        return this.likeList.size() - o.likeList.size();
-    }
-
-    @JsonBackReference(value = "playlist-song")
-    @ManyToMany(fetch = FetchType.LAZY, targetEntity = Playlist.class)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "playlist_song",
+            joinColumns = @JoinColumn(
+                    name = "playlist_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(
+                    name = "song_id", referencedColumnName = "id"))
     @Fetch(value = FetchMode.SUBSELECT)
-    private List<Playlist> playlists;
+    private Collection<Song> songs;
+
 }

@@ -70,7 +70,7 @@ public class SignUpController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(HttpServletRequest request, @RequestBody Account account) {
+    public ResponseEntity<?> login(@RequestBody Account account) {
         MesageRespons result = new MesageRespons();
         HttpStatus httpStatus = null;
         try {

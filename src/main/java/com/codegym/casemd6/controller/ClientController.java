@@ -42,9 +42,12 @@ public class ClientController {
         return new ResponseEntity<>(songPage, HttpStatus.OK);
     }
 
-    @PutMapping("/upadateSong")
-    public ResponseEntity<String> updateSong(@RequestBody Song song) {
-        song.setCount(song.getCount()+1);
+    @PutMapping("/updateView")
+    public ResponseEntity<String> updateSong(@RequestBody Long idAcount) {
+        Song song = songService.findById(idAcount).get();
+        Long count = song.getCount()+1;
+        song.setCount(count);
+        System.out.println("luot nghi sau khi tang" + song.getCount());
         songService.save(song);
         return new ResponseEntity<>("Ok", HttpStatus.OK);
     }
