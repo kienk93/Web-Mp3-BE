@@ -1,8 +1,6 @@
 package com.codegym.casemd6.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -15,8 +13,6 @@ import java.util.List;
 
 @Data
 @Entity
-//@Table(name = "song")
-//@JsonIgnoreProperties(value = {"commentList", "likeList", "playlists"}, allowGetters = true, ignoreUnknown = true)
 public class Song implements Comparable<Song> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,14 +23,15 @@ public class Song implements Comparable<Song> {
     private Long count;
     private Long countLike;
     @ManyToOne
+    @LazyCollection(LazyCollectionOption.FALSE)
     private Account account;
 
-    @OneToMany(cascade = CascadeType.ALL, targetEntity = AccountLike.class, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "song", orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.FALSE)
     @JsonManagedReference
     private List<AccountLike> likeList = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, targetEntity = Comment.class, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "song", orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.FALSE)
     @JsonManagedReference
     private List<Comment> commentList;
@@ -44,7 +41,7 @@ public class Song implements Comparable<Song> {
         return this.likeList.size() - o.likeList.size();
     }
 
-    @JsonBackReference(value = "playlist-song")
+
     @ManyToMany(fetch = FetchType.LAZY, targetEntity = Playlist.class)
     @Fetch(value = FetchMode.SUBSELECT)
     private List<Playlist> playlists;

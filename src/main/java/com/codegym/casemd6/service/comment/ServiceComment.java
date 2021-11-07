@@ -7,6 +7,7 @@ import com.codegym.casemd6.repository.ICommentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -32,5 +33,10 @@ public class ServiceComment implements IServiceComment{
     @Override
     public void remove(Long id) {
         commentRepo.deleteById(id);
+    }
+
+    @Override
+    public List<Comment> findAllComment(Long idSong) {
+        return commentRepo.findAllBySong_Id(idSong);
     }
 }

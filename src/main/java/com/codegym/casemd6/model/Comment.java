@@ -1,7 +1,13 @@
 package com.codegym.casemd6.model;
 
+
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
 import javax.persistence.*;
 
 
@@ -15,13 +21,17 @@ public class Comment {
     private String text;
 
     @ManyToOne
-    @JoinColumn(name = "account_id")
-    @JsonBackReference
     private Account account;
 
     @ManyToOne
-    @JsonBackReference
     @JoinColumn(name = "song_id")
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @JsonBackReference
     private Song song;
+
+    @ManyToOne
+    @JoinColumn(name = "playlist_id")
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private Playlist playlist;
 }
 

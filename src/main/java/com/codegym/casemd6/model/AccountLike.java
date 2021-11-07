@@ -1,10 +1,14 @@
 package com.codegym.casemd6.model;
 
 
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
+
 @Data
 @Entity
 public class AccountLike {
@@ -14,7 +18,7 @@ public class AccountLike {
 
     @ManyToOne
     @JoinColumn(name = "account_id")
-    @JsonBackReference
+    @LazyCollection(LazyCollectionOption.FALSE)
     private Account account;
 
     @ManyToOne
@@ -22,4 +26,7 @@ public class AccountLike {
     @JsonBackReference
     private Song song;
 
+    @ManyToOne
+    @JoinColumn(name = "playlist_id")
+    private Playlist playlist;
 }

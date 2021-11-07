@@ -1,7 +1,6 @@
 package com.codegym.casemd6.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -17,26 +16,29 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "playlist")
-//@JsonIgnoreProperties(value = {"commentList", "likeList", "songs"}, allowGetters = true, ignoreUnknown = true)
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class Playlist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private Date date;
-    private String image;
 
     @ManyToOne
     private Account account;
 
-    @OneToMany(cascade = CascadeType.ALL, targetEntity = AccountLike.class, orphanRemoval = true)
+    @ManyToOne
+    @JoinColumn(name = "image_id")
+    private Image image;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "playlist", orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.FALSE)
-    @JsonManagedReference
     private List<AccountLike> likeList = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, targetEntity = Comment.class, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "playlist", orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.FALSE)
-    @JsonManagedReference
     private List<Comment> commentList;
 
     @ManyToMany(fetch = FetchType.LAZY)

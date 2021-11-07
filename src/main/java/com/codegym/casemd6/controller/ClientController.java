@@ -1,6 +1,8 @@
 package com.codegym.casemd6.controller;
 
+import com.codegym.casemd6.model.Comment;
 import com.codegym.casemd6.model.Song;
+import com.codegym.casemd6.service.comment.IServiceComment;
 import com.codegym.casemd6.service.song.ISongService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -20,6 +24,8 @@ import org.springframework.web.bind.annotation.*;
 public class ClientController {
     @Autowired
     ISongService songService;
+    @Autowired
+    IServiceComment serviceComment;
 
     @GetMapping("/latest")
     public ResponseEntity<Page<Song>> latest() {
@@ -50,5 +56,11 @@ public class ClientController {
         System.out.println("luot nghi sau khi tang" + song.getCount());
         songService.save(song);
         return new ResponseEntity<>("Ok", HttpStatus.OK);
+    }
+
+    @GetMapping("/comment/{idSong}")
+    public ResponseEntity<List<Comment>> fillAllComment(@PathVariable("idSong") Long idSong) {
+        List<Comment> list = serviceComment.findAllComment(idSong);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 }
