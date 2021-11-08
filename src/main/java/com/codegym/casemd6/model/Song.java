@@ -2,6 +2,7 @@ package com.codegym.casemd6.model;
 
 import com.fasterxml.jackson.annotation.*;
 import lombok.Data;
+import lombok.ToString;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.LazyCollection;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @Data
 @Entity
-public class Song implements Comparable<Song> {
+public class Song{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,13 +37,9 @@ public class Song implements Comparable<Song> {
     @JsonManagedReference
     private List<Comment> commentList;
 
-    @Override
-    public int compareTo(Song o) {
-        return this.likeList.size() - o.likeList.size();
-    }
-
-
-    @ManyToMany(fetch = FetchType.LAZY, targetEntity = Playlist.class)
+    @ManyToMany(fetch = FetchType.LAZY, targetEntity = Playlist.class,cascade = CascadeType.ALL)
     @Fetch(value = FetchMode.SUBSELECT)
+
+//    @JsonIgnore
     private List<Playlist> playlists;
 }
