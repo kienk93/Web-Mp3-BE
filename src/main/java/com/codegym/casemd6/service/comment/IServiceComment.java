@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface IServiceComment extends IGeneralService<Comment> {
     List<Comment> findAllComment(Long idSong);
+
+    List<Comment> findAllCommentOfPlaylist(Long idPlaylist);
 }

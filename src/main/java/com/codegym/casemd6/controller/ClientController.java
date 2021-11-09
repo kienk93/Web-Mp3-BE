@@ -56,7 +56,7 @@ public class ClientController {
     @PutMapping("/updateView")
     public ResponseEntity<String> updateSong(@RequestBody Long idSong) {
         Song song = songService.findById(idSong).get();
-        Long count = song.getCount()+1;
+        Long count = song.getCount() + 1;
         song.setCount(count);
         System.out.println("luot nghi sau khi tang" + song.getCount());
         songService.save(song);
@@ -65,26 +65,29 @@ public class ClientController {
 
     @GetMapping("/comment/{idSong}")
     public ResponseEntity<List<Comment>> fillAllComment(@PathVariable("idSong") Long idSong) {
-        List<Comment> list = serviceComment.findAllComment(idSong);
+        Song song = songService.findById(idSong).get();
+        List<Comment> list = song.getCommentList();
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<?> addPlaylist(){
-//        Playlist playlist = new Playlist();
-//        playlist.setName("playlist 1");
-//        Song song1 = songService.findById(1L).get();
-//        Song song2 = songService.findById(2L).get();
-//        song1.getPlaylists().add(playlist);
-//        song2.getPlaylists().add(playlist);
-//        songService.save(song1);
-//        songService.save(song2);
+    @GetMapping("/playlist/{id}")
+    public ResponseEntity<?> findAllSongOfPlaylistById(@PathVariable("id") Long idPlaylist) {
+        Playlist playlist = servicePlaylist.findById(idPlaylist).get();
+        return new ResponseEntity<>(playlist, HttpStatus.OK);
+    }
 
-        Playlist playlist = servicePlaylist.findById(1L).get();
-        Song song3 = songService.findById(3L).get();
-        playlist.getSongs().add(song3);
-        song3.getPlaylists().add(playlist);
-        servicePlaylist.save(playlist);
-        return new ResponseEntity<>("ok",HttpStatus.ACCEPTED);
+    @GetMapping("/playlists")
+    public ResponseEntity<?> findAllPlaylistNew() {
+        Pageable pageable = PageRequest.of(0, 8, Sort.by("id").ascending());
+        Page<Playlist> playlistPage = servicePlaylist.findAllPlaylistLestes(pageable);
+        List<Playlist> playlists = playlistPage.getContent();
+        return new ResponseEntity<>(playlists, HttpStatus.OK);
+    }
+
+    @GetMapping("/playlistComment/{idPlaylist}")
+    public ResponseEntity<List<Comment>> fillAllCommentOfPlaylist(@PathVariable("idPlaylist") Long idPlaylist) {
+        Playlist playlist = servicePlaylist.findById(idPlaylist).get();
+        List<Comment> list = playlist.getCommentList();
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 }

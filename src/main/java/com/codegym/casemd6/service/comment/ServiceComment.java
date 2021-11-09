@@ -39,4 +39,9 @@ public class ServiceComment implements IServiceComment{
     public List<Comment> findAllComment(Long idSong) {
         return commentRepo.findAllBySong_Id(idSong);
     }
+
+    @Override
+    public List<Comment> findAllCommentOfPlaylist(Long idPlaylist) {
+        return commentRepo.findAllByPlaylist_Id(idPlaylist);
+    }
 }

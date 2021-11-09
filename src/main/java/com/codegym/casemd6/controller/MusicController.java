@@ -66,7 +66,7 @@ public class MusicController {
     }
 
     @PostMapping("/comment")
-    public ResponseEntity<MesageRespons> createSong(@RequestBody CommentDto comment) {
+    public ResponseEntity<MesageRespons> createCommentForSong(@RequestBody CommentDto comment) {
         Comment newComment = new Comment();
         Account account = serviceAccount.findById(comment.getIdAccount()).get();
         Song song = songService.findById(comment.getIdSong()).get();
@@ -166,10 +166,15 @@ public class MusicController {
             Song song = songService.findById(listIdSong.get(i)).get();
             if (song != null) {
                 songList.add(song);
+                List<Playlist> playlists = song.getPlaylists();
+                playlists.add(playlist);
+                songService.save(song);
             }
         }
         playlist.setSongs(songList);
         servicePlaylist.save(playlist);
+
+
         MesageRespons mesageRespons = new MesageRespons();
         mesageRespons.setMesage("ok");
         return new ResponseEntity<>(mesageRespons, HttpStatus.OK);
@@ -178,7 +183,10 @@ public class MusicController {
     @PutMapping("/removeSong")
     public ResponseEntity<?> removeSong(@RequestBody RemoveSongDto removeSongDto) {
         Playlist playlist = servicePlaylist.findById(removeSongDto.getIdPlaylist()).get();
+        Song song = songService.findById(removeSongDto.getIdSong()).get();
         List<Song> songList = (List<Song>) playlist.getSongs();
+
+//        Xoa song khoi playlist
         List<Song> newSongList = new ArrayList<>();
         for (int i = 0; i < songList.size(); i++) {
             if (removeSongDto.getIdSong() != songList.get(i).getId()) {
@@ -187,6 +195,33 @@ public class MusicController {
         }
         playlist.setSongs(newSongList);
         servicePlaylist.save(playlist);
+
+//        Xoa song khoi playlist
+        List<Playlist> playlists = song.getPlaylists();
+        List<Playlist> newListPlaylist = new ArrayList<>();
+        for (int i = 0; i < playlists.size(); i++) {
+            if (removeSongDto.getIdPlaylist() != playlists.get(i).getId()) {
+                newListPlaylist.add(playlists.get(i));
+            }
+        }
+
+        song.setPlaylists(newListPlaylist);
+        songService.save(song);
+        MesageRespons mesageRespons = new MesageRespons();
+        mesageRespons.setMesage("ok");
+        return new ResponseEntity<>(mesageRespons, HttpStatus.OK);
+    }
+
+    @PostMapping("/playlistComment")
+    public ResponseEntity<MesageRespons> createCommentForPlaylist(@RequestBody CommentDto comment) {
+        Comment newComment = new Comment();
+        Account account = serviceAccount.findById(comment.getIdAccount()).get();
+        Playlist playlist = servicePlaylist.findById(comment.getIdPlaylist()).get();
+        String text = comment.getText();
+        newComment.setAccount(account);
+        newComment.setPlaylist(playlist);
+        newComment.setText(text);
+        serviceComment.save(newComment);
         MesageRespons mesageRespons = new MesageRespons();
         mesageRespons.setMesage("ok");
         return new ResponseEntity<>(mesageRespons, HttpStatus.OK);

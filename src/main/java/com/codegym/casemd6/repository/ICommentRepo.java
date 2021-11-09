@@ -17,4 +17,5 @@ public interface ICommentRepo extends JpaRepository<Comment, Long> {
     void deleteById(Long id);
 
     List<Comment> findAllBySong_Id(Long id);
+    List<Comment> findAllByPlaylist_Id(Long id);
 }
