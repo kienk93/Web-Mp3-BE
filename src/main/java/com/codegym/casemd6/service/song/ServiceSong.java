@@ -45,4 +45,11 @@ public class ServiceSong implements ISongService{
     public Page<Song> findAllCount(Pageable pageable) {
         return songRepo.findAll(pageable);
     }
+
+    @Override
+    public Page<Song> findSongsByNameContaining(Pageable pageable, String name) {
+        return songRepo.findSongsByNameContaining(name,pageable);
+    }
+
+
 }

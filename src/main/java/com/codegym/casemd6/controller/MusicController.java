@@ -1,24 +1,25 @@
 package com.codegym.casemd6.controller;
 
-import com.codegym.casemd6.dto.CommentDto;
-import com.codegym.casemd6.dto.LikeDto;
-import com.codegym.casemd6.dto.MesageRespons;
-import com.codegym.casemd6.dto.SongInit;
-import com.codegym.casemd6.model.Account;
-import com.codegym.casemd6.model.AccountLike;
-import com.codegym.casemd6.model.Comment;
-import com.codegym.casemd6.model.Song;
+import com.codegym.casemd6.dto.*;
+import com.codegym.casemd6.model.*;
 import com.codegym.casemd6.service.account.IServiceAccount;
 import com.codegym.casemd6.service.accountlike.IServiceLike;
 import com.codegym.casemd6.service.comment.IServiceComment;
+import com.codegym.casemd6.service.image.IServiceImage;
+import com.codegym.casemd6.service.playlist.IServicePlaylist;
 import com.codegym.casemd6.service.song.ISongService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -36,6 +37,10 @@ public class MusicController {
     IServiceComment serviceComment;
     @Autowired
     IServiceLike serviceLike;
+    @Autowired
+    IServiceImage serviceImage;
+    @Autowired
+    IServicePlaylist servicePlaylist;
 
     @PostMapping("/create")
     public ResponseEntity<MesageRespons> createSong(@RequestBody SongInit song) {
@@ -112,5 +117,40 @@ public class MusicController {
         songService.remove(id);
         return new ResponseEntity<>(HttpStatus.OK);
 
+    }
+
+    @PostMapping("/creatlist")
+    public ResponseEntity<?> like(@RequestBody PlaylistDto playlistDto) {
+        Account account = serviceAccount.findById(playlistDto.getIdAccount()).get();
+        Date date = new Date();
+        Image image = new Image();
+        image.setPath(playlistDto.getPath());
+        image = serviceImage.add(image);
+        Playlist playlist = new Playlist();
+        playlist.setName(playlistDto.getName());
+        playlist.setAccount(account);
+        playlist.setImage(image);
+        playlist.setDate(date);
+        servicePlaylist.save(playlist);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/playlists/{id}")
+    public ResponseEntity<List<Playlist>> findAllByID(@PathVariable("id") Long id) {
+        List<Playlist> playlist = servicePlaylist.findAllByAccount_Id(id);
+        return new ResponseEntity<>(playlist, HttpStatus.OK);
+    }
+    @GetMapping("/playlist/{id}")
+    public ResponseEntity<List<Song>> findAllSongOfPlaylist(@PathVariable("id") Long id) {
+        Playlist playlist = servicePlaylist.findById(id).get();
+        List<Song> songList = (List<Song>) playlist.getSongs();
+        return new ResponseEntity<>(songList, HttpStatus.OK);
+    }
+
+    @GetMapping("/findSongByName")
+    public ResponseEntity<Page<Song>> findAllSongByName(String name) {
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("id").descending());
+        Page<Song> songPage = songService.findSongsByNameContaining(pageable,name);
+        return new ResponseEntity<>(songPage, HttpStatus.OK);
     }
 }
