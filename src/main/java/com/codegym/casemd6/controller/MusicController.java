@@ -140,6 +140,7 @@ public class MusicController {
         List<Playlist> playlist = servicePlaylist.findAllByAccount_Id(id);
         return new ResponseEntity<>(playlist, HttpStatus.OK);
     }
+
     @GetMapping("/playlist/{id}")
     public ResponseEntity<List<Song>> findAllSongOfPlaylist(@PathVariable("id") Long id) {
         Playlist playlist = servicePlaylist.findById(id).get();
@@ -147,10 +148,47 @@ public class MusicController {
         return new ResponseEntity<>(songList, HttpStatus.OK);
     }
 
-    @GetMapping("/findSongByName")
-    public ResponseEntity<Page<Song>> findAllSongByName(String name) {
+    @GetMapping("/findSongByName/{name}")
+    public ResponseEntity<List<Song>> findAllSongByName(@PathVariable("name") String name) {
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").descending());
-        Page<Song> songPage = songService.findSongsByNameContaining(pageable,name);
-        return new ResponseEntity<>(songPage, HttpStatus.OK);
+        Page<Song> songPage = songService.findSongsByNameContaining(pageable, name);
+        List<Song> list = songPage.getContent();
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @PostMapping("/addSongToList")
+    public ResponseEntity<?> addSongToList(@RequestBody PlaylistAddDto playlistAddDto) {
+        Long idPlaylist = playlistAddDto.getIdPlaylist();
+        Playlist playlist = servicePlaylist.findById(idPlaylist).get();
+        List<Song> songList = (List<Song>) playlist.getSongs();
+        List<Long> listIdSong = playlistAddDto.getIdSongs();
+        for (int i = 0; i < listIdSong.size(); i++) {
+            Song song = songService.findById(listIdSong.get(i)).get();
+            if (song != null) {
+                songList.add(song);
+            }
+        }
+        playlist.setSongs(songList);
+        servicePlaylist.save(playlist);
+        MesageRespons mesageRespons = new MesageRespons();
+        mesageRespons.setMesage("ok");
+        return new ResponseEntity<>(mesageRespons, HttpStatus.OK);
+    }
+
+    @PutMapping("/removeSong")
+    public ResponseEntity<?> removeSong(@RequestBody RemoveSongDto removeSongDto) {
+        Playlist playlist = servicePlaylist.findById(removeSongDto.getIdPlaylist()).get();
+        List<Song> songList = (List<Song>) playlist.getSongs();
+        List<Song> newSongList = new ArrayList<>();
+        for (int i = 0; i < songList.size(); i++) {
+            if (removeSongDto.getIdSong() != songList.get(i).getId()) {
+                newSongList.add(songList.get(i));
+            }
+        }
+        playlist.setSongs(newSongList);
+        servicePlaylist.save(playlist);
+        MesageRespons mesageRespons = new MesageRespons();
+        mesageRespons.setMesage("ok");
+        return new ResponseEntity<>(mesageRespons, HttpStatus.OK);
     }
 }
