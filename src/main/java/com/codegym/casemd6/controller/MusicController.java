@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.relational.core.sql.Like;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -120,7 +121,7 @@ public class MusicController {
     }
 
     @PostMapping("/creatlist")
-    public ResponseEntity<?> like(@RequestBody PlaylistDto playlistDto) {
+    public ResponseEntity<?> creatList(@RequestBody PlaylistDto playlistDto) {
         Account account = serviceAccount.findById(playlistDto.getIdAccount()).get();
         Date date = new Date();
         Image image = new Image();
@@ -225,5 +226,25 @@ public class MusicController {
         MesageRespons mesageRespons = new MesageRespons();
         mesageRespons.setMesage("ok");
         return new ResponseEntity<>(mesageRespons, HttpStatus.OK);
+    }
+
+
+    @PostMapping("/likePlaylist")
+    public ResponseEntity<MesageRespons> createLikeForPlaylist(@RequestBody LikeDto likeDto) {
+        Account account = serviceAccount.findById(likeDto.getIdAccount()).get();
+        Playlist playlist = servicePlaylist.findById(likeDto.getIdPlaylist()).get();
+        AccountLike like = new AccountLike();
+        like.setAccount(account);
+        like.setPlaylist(playlist);
+        serviceLike.save(like);
+        MesageRespons mesageRespons = new MesageRespons();
+        mesageRespons.setMesage("ok");
+        return new ResponseEntity<>(mesageRespons, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/unlike/{idLike}")
+    public ResponseEntity<?> unlikePlaylist(@PathVariable("idLike") Long idLike) {
+        serviceLike.remove(idLike);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

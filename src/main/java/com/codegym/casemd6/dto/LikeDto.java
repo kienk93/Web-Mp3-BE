@@ -6,4 +6,5 @@ import lombok.Data;
 public class LikeDto {
     private Long idAccount;
     private Long idSong;
+    private Long idPlaylist;
 }
