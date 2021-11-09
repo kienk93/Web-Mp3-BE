@@ -32,6 +32,7 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "playlist_id")
     @LazyCollection(LazyCollectionOption.FALSE)
+    @JsonBackReference
     private Playlist playlist;
 }
 

@@ -39,7 +39,5 @@ public class Song{
 
     @ManyToMany(fetch = FetchType.LAZY, targetEntity = Playlist.class,cascade = CascadeType.ALL)
     @Fetch(value = FetchMode.SUBSELECT)
-
-//    @JsonIgnore
     private List<Playlist> playlists;
 }
