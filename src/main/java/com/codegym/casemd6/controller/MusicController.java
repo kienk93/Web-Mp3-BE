@@ -78,6 +78,16 @@ public class MusicController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @DeleteMapping("/deletePlaylist/{id}")
+    public ResponseEntity<?> deletePlaylist(@PathVariable("id") Long id) {
+        Playlist playlist = servicePlaylist.findById(id).get();
+        if (playlist == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        servicePlaylist.remove(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @PostMapping("/comment")
     public ResponseEntity<MesageRespons> createCommentForSong(@RequestBody CommentDto comment) {
         Comment newComment = new Comment();
@@ -168,6 +178,7 @@ public class MusicController {
         List<Song> list = songPage.getContent();
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
+
     //ok
     @PostMapping("/addSongToList")
     public ResponseEntity<?> addSongToList(@RequestBody PlaylistAddDto playlistAddDto) {
@@ -238,5 +249,34 @@ public class MusicController {
         MesageRespons mesageRespons = new MesageRespons();
         mesageRespons.setMesage("ok");
         return new ResponseEntity<>(mesageRespons, HttpStatus.OK);
+    }
+    @PutMapping("/editProfile")
+    public ResponseEntity<?> editProfile(@RequestBody EditAccountDto editAccountDto){
+        Account account = serviceAccount.findById(editAccountDto.getIdAccount()).get();
+        account.setFullName(editAccountDto.getFullName());
+        Image image = new Image();
+        image.setPath(editAccountDto.getPath());
+        image = serviceImage.add(image);
+        account.setAvatar(image);
+        account.setAddress(editAccountDto.getAddress());
+        serviceAccount.save(account);
+        return new ResponseEntity<>(HttpStatus.OK);
+
+    }
+
+    @PutMapping("/changePassword")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordDto changePasswordDto){
+        Account account = serviceAccount.findById(changePasswordDto.getIdAccount()).get();
+        if(account.getPassword().equals(changePasswordDto.getOldPassword())){
+            account.setPassword(changePasswordDto.getNewPassword());
+            MesageRespons mesageRespons = new MesageRespons();
+            mesageRespons.setMesage("ok");
+            serviceAccount.save(account);
+            return new ResponseEntity<>(mesageRespons, HttpStatus.OK);
+        }else {
+            MesageRespons mesageRespons = new MesageRespons();
+            mesageRespons.setMesage("NO");
+            return new ResponseEntity<>(mesageRespons,HttpStatus.OK);
+        }
     }
 }

@@ -52,16 +52,7 @@ public class ClientController {
         Page<Song> songPage = songService.findAllLestes(pageable);
         return new ResponseEntity<>(songPage, HttpStatus.OK);
     }
-    @DeleteMapping("/deletePlaylist/{id}")
-    public ResponseEntity<?> deletePlaylist(@PathVariable("id") Long id) {
-        Playlist playlist = servicePlaylist.findById(id).get();
-        if (playlist == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        servicePlaylist.remove(id);
-        return new ResponseEntity<>(HttpStatus.OK);
 
-    }
 
     @PutMapping("/updateView")
     public ResponseEntity<String> updateSong(@RequestBody Long idSong) {
