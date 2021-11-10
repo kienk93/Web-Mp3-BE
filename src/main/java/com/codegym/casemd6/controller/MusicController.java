@@ -247,4 +247,15 @@ public class MusicController {
         serviceLike.remove(idLike);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @DeleteMapping("/deletePlaylist/{id}")
+    public ResponseEntity<?> deletePlaylist(@PathVariable("id") Long id) {
+        Playlist playlist = servicePlaylist.findById(id).get();
+        if (playlist == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        servicePlaylist.remove(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+
+    }
 }

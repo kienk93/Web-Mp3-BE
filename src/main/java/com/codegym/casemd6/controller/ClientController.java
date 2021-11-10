@@ -1,5 +1,6 @@
 package com.codegym.casemd6.controller;
 
+import com.codegym.casemd6.dto.SearchDto;
 import com.codegym.casemd6.model.Comment;
 import com.codegym.casemd6.model.Playlist;
 import com.codegym.casemd6.model.Song;
@@ -15,6 +16,7 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
@@ -89,5 +91,17 @@ public class ClientController {
         Playlist playlist = servicePlaylist.findById(idPlaylist).get();
         List<Comment> list = playlist.getCommentList();
         return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<List<Song>> findSongByNameOrSinger(@RequestBody SearchDto searchDto) {
+        List<Song> songList;
+        Pageable pageable = PageRequest.of(0, 8, Sort.by("id").ascending());
+        if (searchDto.isNameOrSinger()) {
+            songList = songService.findSongsByNameContaining(pageable, searchDto.getName()).getContent();
+        } else {
+            songList = songService.findSongsBySingerContaining(pageable, searchDto.getName()).getContent();
+        }
+        return new ResponseEntity<>(songList, HttpStatus.OK);
     }
 }
