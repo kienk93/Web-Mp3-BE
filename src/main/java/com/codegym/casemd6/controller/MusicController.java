@@ -168,7 +168,7 @@ public class MusicController {
         List<Song> list = songPage.getContent();
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
-
+    //ok
     @PostMapping("/addSongToList")
     public ResponseEntity<?> addSongToList(@RequestBody PlaylistAddDto playlistAddDto) {
         Long idPlaylist = playlistAddDto.getIdPlaylist();
