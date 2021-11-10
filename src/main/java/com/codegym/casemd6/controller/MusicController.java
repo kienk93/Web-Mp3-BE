@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -63,6 +64,18 @@ public class MusicController {
         List<Song> songList = new ArrayList<>();
         songList = (List<Song>) songService.findByAcount(idAccount);
         return new ResponseEntity<>(songList, HttpStatus.OK);
+    }
+
+
+    @PutMapping("/editSong/{id}")
+    public ResponseEntity<Song> editSong(@PathVariable Long id, @RequestBody Song song) {
+        Optional<Song> song1 = songService.findById(id);
+        if (!song1.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        song.setId(id);
+        songService.save(song);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/comment")
